@@ -47,4 +47,4 @@ with col2:
             st.error("Invalid username or password")
 
     st.write("")
-    st.caption("Default login → admin / admin")
+    st.caption("Default login → guest / guest")
