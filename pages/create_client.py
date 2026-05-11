@@ -308,6 +308,21 @@ if editable and st.button("💾 Save"):
                 VALUES (?, ?, 1, ?)
             """, (new_id, fname, str(po_date)))
 
+        # ================= 🔥 FEATURE LOGGING (CREATE) =================
+        for fname in selected_features:
+            cur.execute("""
+                INSERT INTO updates (
+                    client_id, type, title, status, created_at, created_by, remarks
+                )
+                VALUES (?, 'feature_log', ?, 'Done', ?, ?, ?)
+            """, (
+                new_id,
+                f"Enabled Feature: {fname}",
+                str(datetime.now()),
+                current_user,
+                feature_remark
+            ))
+
         conn.commit()
         st.success(f"✅ Client Created! ID: {formatted_id}")
 
