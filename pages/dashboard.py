@@ -177,7 +177,7 @@ else:
             latest_date = latest_date[:16]
 
         with st.container(height=100):
-            col1, col2, col3, col4, col5 = st.columns([2,1,1,4,3])
+            col1, col2, col3, col4, col5 = st.columns([3,1,1,3,3])
 
             with col1:
                 st.markdown(f"##### {client_name}")
