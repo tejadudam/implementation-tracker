@@ -63,7 +63,7 @@ def render_sidebar():
     # ---------- USER INFO ----------
     st.sidebar.markdown(f"""
         <div class="user-box">
-        👤 {user}        
+        👤 {user}, {role}        
         </div>
     """, unsafe_allow_html=True)
 
