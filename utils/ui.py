@@ -1,6 +1,8 @@
 import streamlit as st
 from db import get_connection
-from auth import get_current_user, logout
+from auth import get_current_user, get_role, logout
+
+user_role = get_role()
 
 def top_bar():
     col1, col2 = st.columns([8,1])
@@ -104,30 +106,35 @@ def quick_update_dialog():
     title = st.text_input("Title")
     description = st.text_area("Description")
 
+
     # ---------- SAVE ----------
-    if st.button("💾 Save"):
+    if user_role == "viewer":
+        st.info("View-only access. Cannot add updates.")
 
-        if not title.strip():
-            st.warning("Title is required")
-            return
+    else:
+        if st.button("💾 Save"):
 
-        if entry_type == "Status":
-            cur.execute("""
-                INSERT INTO updates
-                (client_id, type, title, description, status, created_at, created_by)
-                VALUES (?, 'status', ?, ?, 'Done', datetime('now'), ?)
-            """, (client_id, title, description, current_user))
+            if not title.strip():
+                st.warning("Title is required")
+                return
 
-        else:
-            cur.execute("""
-                INSERT INTO updates
-                (client_id, type, title, description, status, created_at, created_by)
-                VALUES (?, 'update', ?, ?, 'In Progress', datetime('now'), ?)
-            """, (client_id, title, description, current_user))
+            if entry_type == "Status":
+                cur.execute("""
+                    INSERT INTO updates
+                    (client_id, type, title, description, status, created_at, created_by)
+                    VALUES (?, 'status', ?, ?, 'Done', datetime('now'), ?)
+                """, (client_id, title, description, current_user))
 
-        conn.commit()
-        st.success("Added successfully ⚡")
-        st.rerun()
+            else:
+                cur.execute("""
+                    INSERT INTO updates
+                    (client_id, type, title, description, status, created_at, created_by)
+                    VALUES (?, 'update', ?, ?, 'In Progress', datetime('now'), ?)
+                """, (client_id, title, description, current_user))
+
+            conn.commit()
+            st.success("Added successfully ⚡")
+            st.rerun()
 
 def hide_sidebar():
     st.markdown("""

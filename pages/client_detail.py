@@ -205,10 +205,14 @@ def render_status():
         )
         cola, colb = st.columns(2)
         with cola:
-            if st.button("💾 Update"):
-                cur.execute("UPDATE clients SET status=? WHERE id=?", (status, client_id))
-                conn.commit()
-                st.rerun()
+            if user_role == "viewer":
+                st.info("View-only access")
+
+            else:   
+                if st.button("💾 Update"):
+                    cur.execute("UPDATE clients SET status=? WHERE id=?", (status, client_id))
+                    conn.commit()
+                    st.rerun()
         with colb:
             if st.button("📂Client Info", key=f"edit_{client_id}"):
                 st.session_state["edit_client_id"] = client_id
@@ -238,47 +242,51 @@ def render_entry():
             desc = st.text_area("Description")
             is_paid = st.selectbox("Paid?", ["Free","Paid"]) == "Paid"
 
-        if st.button("Save Entry"):
+        if user_role == "viewer":
+            st.info("You have view-only access. Contact admin for modifications.")
 
-            if not title.strip():
-                st.warning("Title required")
-                return
+        else:
+            if st.button("Save Entry"):
 
-            if entry_type == "Update":
-                cur.execute("""
-                    INSERT INTO updates (client_id,type,title,description,status,created_at,created_by)
-                    VALUES (?, 'update', ?, ?, 'In Progress', ?, ?)
-                """, (client_id,title,desc,str(datetime.now()),current_user))
+                if not title.strip():
+                    st.warning("Title required")
+                    return
 
-            elif entry_type == "Requirement":
-                cur.execute("""
-                    INSERT INTO updates (client_id,type,title,description,status,is_paid,created_at,created_by)
-                    VALUES (?, 'requirement', ?, ?, 'In Progress', ?, ?, ?)
-                """, (client_id,title,desc,int(is_paid),str(datetime.now()),current_user))
+                if entry_type == "Update":
+                    cur.execute("""
+                        INSERT INTO updates (client_id,type,title,description,status,created_at,created_by)
+                        VALUES (?, 'update', ?, ?, 'In Progress', ?, ?)
+                    """, (client_id,title,desc,str(datetime.now()),current_user))
 
-            elif entry_type == "MOM":
-                cur.execute("""
-                    INSERT INTO updates (client_id,type,title,status,created_at,created_by)
-                    VALUES (?, 'mom', ?, 'In Progress', ?, ?)
-                """, (client_id,title,str(datetime.now()),current_user))
-                mom_id = cur.lastrowid
+                elif entry_type == "Requirement":
+                    cur.execute("""
+                        INSERT INTO updates (client_id,type,title,description,status,is_paid,created_at,created_by)
+                        VALUES (?, 'requirement', ?, ?, 'In Progress', ?, ?, ?)
+                    """, (client_id,title,desc,int(is_paid),str(datetime.now()),current_user))
 
-                for p in points.split("\n"):
-                    if p.strip():
-                        cur.execute("""
-                            INSERT INTO updates (client_id,parent_id,type,title,status,created_at,created_by)
-                            VALUES (?, ?, 'mom_point', ?, 'In Progress', ?, ?)
-                        """, (client_id,mom_id,p.strip(),str(datetime.now()),current_user))
+                elif entry_type == "MOM":
+                    cur.execute("""
+                        INSERT INTO updates (client_id,type,title,status,created_at,created_by)
+                        VALUES (?, 'mom', ?, 'In Progress', ?, ?)
+                    """, (client_id,title,str(datetime.now()),current_user))
+                    mom_id = cur.lastrowid
 
-            elif entry_type == "Status":
-                cur.execute("""
-                    INSERT INTO updates (client_id,type,title,status,created_at,created_by)
-                    VALUES (?, 'status', ?, 'Done', ?, ?)
-                """, (client_id,title,str(datetime.now()),current_user))
+                    for p in points.split("\n"):
+                        if p.strip():
+                            cur.execute("""
+                                INSERT INTO updates (client_id,parent_id,type,title,status,created_at,created_by)
+                                VALUES (?, ?, 'mom_point', ?, 'In Progress', ?, ?)
+                            """, (client_id,mom_id,p.strip(),str(datetime.now()),current_user))
 
-            conn.commit()
-            st.success("Saved")
-            st.rerun()
+                elif entry_type == "Status":
+                    cur.execute("""
+                        INSERT INTO updates (client_id,type,title,status,created_at,created_by)
+                        VALUES (?, 'status', ?, 'Done', ?, ?)
+                    """, (client_id,title,str(datetime.now()),current_user))
+
+                conn.commit()
+                st.success("Saved")
+                st.rerun()
 
 render_entry()
 
