@@ -46,5 +46,4 @@ with col2:
         else:
             st.error("Invalid username or password")
 
-    st.write("")
-    st.caption("Default login → guest / guest")
+    st.info("👋 **Welcome!**  \nUse **guest** for both credentials to step inside.")
