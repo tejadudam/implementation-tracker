@@ -1,5 +1,8 @@
 import streamlit as st
 from auth import login_user
+from db import init_db
+
+init_db()
 
 st.markdown("""
     <style>
