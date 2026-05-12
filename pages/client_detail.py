@@ -466,7 +466,7 @@ def render_timeline():
         # ================= STEP 3: RENDER =================
         for date in sorted(grouped_by_date.keys(), reverse=True):
 
-            st.markdown(f"### 📅 {date}")
+            st.markdown(f"### 🗓️ {date}")
 
             day_rows = grouped_by_date[date]
 
