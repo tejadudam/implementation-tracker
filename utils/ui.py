@@ -1,6 +1,6 @@
 import streamlit as st
 from db import get_connection
-from auth import get_current_user, get_role, logout
+from auth import get_current_user, get_role, logout, require_login
 
 # ================= INIT =================
 require_login()
