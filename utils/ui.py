@@ -2,6 +2,12 @@ import streamlit as st
 from db import get_connection
 from auth import get_current_user, get_role, logout
 
+# ================= INIT =================
+require_login()
+conn = get_connection()
+cur = conn.cursor()
+
+current_user = get_current_user()
 user_role = get_role()
 
 def top_bar():
@@ -106,13 +112,12 @@ def quick_update_dialog():
     title = st.text_input("Title")
     description = st.text_area("Description")
 
-
     # ---------- SAVE ----------
     if user_role == "viewer":
         st.info("View-only access. Cannot add updates.")
 
     else:
-        if st.button("💾 Save"):
+        if st.button("💾 Add Entry"):
 
             if not title.strip():
                 st.warning("Title is required")
